@@ -13,7 +13,6 @@ app = Flask(__name__)
 def home():
     # This will render the home.html page when visiting the root URL
     return render_template('home.html')
-
 @app.route('/predict', methods=['GET', 'POST'])
 def predict():
     if request.method == 'POST':
@@ -35,9 +34,12 @@ def predict():
 
             # Use the trained pipeline to make a prediction
             prediction = pipeline.predict(input_data)
+
+            # Convert the prediction to a native Python float
+            prediction_value = float(prediction[0])  # Ensure it is JSON serializable
             
-            # Return the result as a JSON response (which will be handled by JavaScript)
-            return jsonify(prediction=prediction[0])
+            # Return the result as a JSON response
+            return jsonify(prediction=prediction_value)
 
         except Exception as e:
             # Handle any errors (e.g., invalid input data) gracefully
@@ -46,6 +48,7 @@ def predict():
     else:
         # For GET request, simply render the prediction page
         return render_template('predict.html')
+
 
 if __name__ == "__main__":
     app.run(debug=True)
